@@ -15,25 +15,40 @@ intelligent, simple primitives.
 1. Synopsis
 ---
 
-    // which site loads first?
-
-    func fetch_site(url string) Voidchan {
-        out := make(Voidchan, 1)
-        go func() {
-            resp, _ := http.Get(url)
-            defer resp.Body.Close()
-            out <- url
-        }()
-        return out
-    }
-
     func main() {
-        res := orc.Cut([]Voidchan{
-            fetch_site("http://archlinux.fr"),
-            fetch_site("http://www.easynews.com"),
-            fetch_site("http://golang.org"),
+        // first example: print which site loads first
+        // this site loads a URL and then publishes the URL when it finishes
+        s1 := Site{
+            func(url Void, out Voidchan) {
+                resp, _ := http.Get(url.(string))
+                defer resp.Body.Close()
+                out <- url
+            },
+        }
+
+        res1 := Cut([]Voidchan{
+            s1.Call("http://archlinux.fr"),
+            s1.Call("http://easynews.com"),
+            s1.Call("http://google.com"),
         })
-        fmt.Printf("%s loaded first\n", res1.(string))
+        fmt.Println(res1.(string))
+
+        // second example: interleave the ongoing results of two concurrent
+        // operations
+        // this site publishes "m" every "m" seconds
+
+        s2 := Site{
+            func(m Void, out Voidchan) {
+                for {
+                    <-time.After(time.Duration(m.(int)) * time.Second)
+                    out <- strconv.Itoa(m.(int))
+                }
+            },
+        }
+        res2 := Merge([]Voidchan{s2.Call(2), s2.Call(3)})
+        res2.ForEachDo(func(s Void) {
+            fmt.Println(s)
+        })
     }
 
 2. Acknowledgements

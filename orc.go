@@ -1,5 +1,4 @@
 package orc
-
 /*
  * end run around the type system
  */
@@ -41,4 +40,18 @@ func Cut(cs []Voidchan) Void {
 		c <- arg
 	})
 	return <-c
+}
+
+/*
+ * Sites, functions which publish multiple values
+ */
+
+type Site struct {
+	Fn func(arg Void, out Voidchan)
+}
+
+func (s Site) Call(arg Void) Voidchan {
+	out := make(Voidchan, 100)
+	go s.Fn(arg, out)
+	return out
 }
