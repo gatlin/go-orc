@@ -3,7 +3,7 @@ Orc
 
 Concurrency orchestration patterns for a concurrent language
 
-(c) 2012 Gatlin Johnson <rokenrol@gmail.com>
+(c) 2012 Gatlin Johnson <rokenrol@gmail.com>. Licensed under the WTFPL.
 
 0. Introduction
 ---
@@ -79,5 +79,17 @@ retaining guarantees about the effects of our programs.
 
 Orc additionally intends on supplying common combinations of these functions;
 currently, `Cut` is also provided (a combination of `Merge` and `WithFirstDo`).
+
+4. Future
+---
+
+Right now I play fast and loose with the type system. I would eventually like
+to use the reflect package to allow library users to declare normal types, and
+let Orc simply ensure they're consistent. For now, though, we have type
+assertions.
+
+If you write a cool function building on the ones supplied here, send me a pull
+request and I'll probably include it. It'd be neat to turn this into the
+one-stop-shop for concurrency patterns.
 
 [1]: http://orc.csres.utexas.edu
