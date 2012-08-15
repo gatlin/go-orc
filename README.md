@@ -55,9 +55,9 @@ intelligent, simple primitives.
 ---
 
 The work is inspired by the [language of the same name][1], and the work of Dr
-Jayadev Misra and Dr William Cook.
+Jayadev Misra and Dr William Cook. I am not affiliated with them.
 
-3. This doesn't look much like Orc ... / can you explain this?
+3. Explain this Orc thing
 ---
 
 The Orc language, as a domain specific language built from scratch, makes
@@ -106,5 +106,7 @@ assertions.
 If you write a cool function building on the ones supplied here, send me a pull
 request and I'll probably include it. It'd be neat to turn this into the
 one-stop-shop for concurrency patterns.
+
+Also, better examples.
 
 [1]: http://orc.csres.utexas.edu
