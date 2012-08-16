@@ -34,7 +34,7 @@ intelligent, simple primitives.
 
         // second example: interleave the ongoing results of two concurrent
         // operations
-        // this site publishes "m" every "m" seconds
+        // this site publishes "m" after "m" seconds
 
         s2 := Site{
             func(m Void, out Voidchan) {
