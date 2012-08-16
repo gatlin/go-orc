@@ -14,6 +14,7 @@ intelligent, simple primitives.
 
 1. Synopsis
 ---
+
     func main() {
         // first example: print which site loads first
         // this site loads a URL and then publishes the URL when it finishes
@@ -34,7 +35,7 @@ intelligent, simple primitives.
 
         // second example: interleave the ongoing results of two concurrent
         // operations
-        // this site publishes "m" after "m" seconds
+        // this site publishes "m" every "m" seconds
 
         s2 := Site{
             func(m Void, out Voidchan) {
@@ -42,11 +43,16 @@ intelligent, simple primitives.
                 out <- strconv.Itoa(m.(int))
             },
         }
+        s3 := Site{
+            func(n Void, out Voidchan) {
+                fmt.Println(n)
+                out <- nil
+            },
+        }
         res2 := Merge([]Voidchan{s2.Call(2), s2.Call(3)})
-        res2.ForEachDo(func(s Void) {
-            fmt.Println(s)
-        })
-    }
+        res2.ForEachDo(s3)
+
+}
 
 2. Acknowledgements
 ---
