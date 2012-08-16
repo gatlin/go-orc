@@ -38,16 +38,17 @@ func Merge(cs []Voidchan) Voidchan {
 	return combined
 }
 
-func (self Voidchan) ForEachDo(site Site) {
+func (self Voidchan) ForEachDo(site Site) Voidchan {
 	for i := 0; i < cap(self); i++ {
 		s := <-self
 		<-site.Call(s)
 	}
+	return make(Voidchan, 1)
 }
 
 func (self Voidchan) WithFirstDo(fn Site) {
 	v := <-self
-	go fn.Call(v)
+	<-fn.Call(v)
 }
 
 func Cut(cs []Voidchan) Void {
@@ -60,3 +61,4 @@ func Cut(cs []Voidchan) Void {
 	})
 	return <-c
 }
+

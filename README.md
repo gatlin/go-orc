@@ -33,26 +33,45 @@ intelligent, simple primitives.
         })
         fmt.Println(res1.(string))
 
-        // second example: interleave the ongoing results of two concurrent
-        // operations
-        // this site publishes "m" every "m" seconds
+        // metronome example
 
-        s2 := Site{
-            func(m Void, out Voidchan) {
-                <-time.After(time.Duration(m.(int)) * time.Second)
-                out <- strconv.Itoa(m.(int))
+        // returns t after t seconds
+        rtimer := Site{
+            func(t Void, out Voidchan) {
+                <-time.After(time.Duration(t.(int)) * time.Second)
+                out <- t
             },
         }
-        s3 := Site{
-            func(n Void, out Voidchan) {
-                fmt.Println(n)
+
+        // rtimer test
+        rtimer.Call(5).WithFirstDo(Site{
+            func(arg Void, out Voidchan) {
+                fmt.Println("rtimer test")
+                out <- nil
+            },
+        })
+
+        // site to print a message
+        site_print := Site{
+            func(msg Void, out Voidchan) {
+                fmt.Println(msg)
                 out <- nil
             },
         }
-        res2 := Merge([]Voidchan{s2.Call(2), s2.Call(3)})
-        res2.ForEachDo(s3)
 
-}
+        // metronome site
+        // sites can be recursive if pre-declared
+        var metronome Site
+        metronome = Site{
+            func(t Void, out Voidchan) {
+                Merge([]Voidchan{
+                    site_print.Call("tick"),
+                    rtimer.Call(1).ForEachDo(metronome),
+                })
+            },
+        }
+        <-metronome.Call(1)
+    }
 
 2. Acknowledgements
 ---
