@@ -1,4 +1,5 @@
 package orc
+
 /*
  * end run around the type system
  */
@@ -12,20 +13,39 @@ type anyfunc func(a Void)
  */
 
 func Merge(cs []Voidchan) Voidchan {
-	combined := make(Voidchan, 100)
+	numSites := len(cs)
+	combined := make(Voidchan, numSites+1)
+	halter := make(chan int, numSites)
+	go func(h chan int) {
+		i := 0
+		for n := range h {
+			i = i + n
+			if i == numSites {
+				combined <- nil
+				return
+			}
+		}
+	}(halter)
+
 	for _, c := range cs {
-		go func(ch Voidchan) {
+		go func(ch Voidchan, h chan int) {
 			for v := range ch {
 				combined <- v
+				h <- 1
 			}
-		}(c)
+			return
+		}(c, halter)
 	}
 	return combined
 }
 
 func (self Voidchan) ForEachDo(fn anyfunc) {
 	for v := range self {
-		go fn(v)
+		if v == nil {
+			return
+		} else {
+			go fn(v)
+		}
 	}
 }
 
@@ -43,7 +63,7 @@ func Cut(cs []Voidchan) Void {
 }
 
 /*
- * Sites, functions which publish multiple values
+ * Sites, functions which remote / asynchronous services
  */
 
 type Site struct {

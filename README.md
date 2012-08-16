@@ -14,7 +14,6 @@ intelligent, simple primitives.
 
 1. Synopsis
 ---
-
     func main() {
         // first example: print which site loads first
         // this site loads a URL and then publishes the URL when it finishes
@@ -39,10 +38,8 @@ intelligent, simple primitives.
 
         s2 := Site{
             func(m Void, out Voidchan) {
-                for {
-                    <-time.After(time.Duration(m.(int)) * time.Second)
-                    out <- strconv.Itoa(m.(int))
-                }
+                <-time.After(time.Duration(m.(int)) * time.Second)
+                out <- strconv.Itoa(m.(int))
             },
         }
         res2 := Merge([]Voidchan{s2.Call(2), s2.Call(3)})
@@ -63,8 +60,8 @@ Jayadev Misra and Dr William Cook. I am not affiliated with them.
 The Orc language, as a domain specific language built from scratch, makes
 certain language constructs implicit: asynchronous queues, iteration, and even
 concurrency itself. The corner stone of their work is the *site*, which is like
-a function except it executes concurrently and *publishes* an arbitrary number
-of values at non-deterministic times.
+a function but which executes concurrently with other sites and responds
+asynchronously with either a value or an explicit nothing.
 
 In Go, we have functions, the `go` keyword, and asynchronous queues as
 first-class values. Thus, a *site* is any function which returns a chan
@@ -74,7 +71,7 @@ On top of this notion of sites there are three combinators: *parallel*,
 *sequence*, and *prune*. These ideas have been modified to reflect the
 mechanics of the host language while retaining (hopefully) the same semantics.
 
-*Parallel* takes two site calls and re-publishes their independent results 
+*Parallel* takes two site calls and re-publishes their independent results
 together. Since really all this is doing is merging the output streams of two
 chans (Go handles the concurrency part), this library provides `Merge`.
 
