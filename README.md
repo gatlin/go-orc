@@ -125,6 +125,12 @@ to use the reflect package to allow library users to declare normal types, and
 let Orc simply ensure they're consistent. For now, though, we have type
 assertions.
 
+Another goal is already suggested by my use of Site objects rather than simple
+functions: I would like for Sites to allow both local *and remote*
+computations. This requires a bit more thinking but I imagine net-chans and
+some kind of uniform Site registration and announcement system could make
+wide-area orchestration much more feasible.
+
 If you write a cool function building on the ones supplied here, send me a pull
 request and I'll probably include it. It'd be neat to turn this into the
 one-stop-shop for concurrency patterns.
