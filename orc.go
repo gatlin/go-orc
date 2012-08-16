@@ -3,7 +3,6 @@ package orc
 /*
  * end run around the type system
  */
-
 type Void interface{}
 type Voidchan chan Void
 type anyfunc func(a Void)
@@ -11,7 +10,6 @@ type anyfunc func(a Void)
 /*
  * Orc inspired functions
  */
-
 func Merge(cs []Voidchan) Voidchan {
 	numVals := 0
 	for _, c := range cs {
@@ -57,7 +55,6 @@ func Cut(cs []Voidchan) Void {
 /*
  * Sites, functions which remote / asynchronous services
  */
-
 type Site struct {
 	Fn func(arg Void, out Voidchan)
 }
