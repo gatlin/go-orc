@@ -66,7 +66,7 @@ intelligent, simple primitives.
             func(t Void, out Voidchan) {
                 Merge([]Voidchan{
                     site_print.Call("tick"),
-                    rtimer.Call(1).ForEachDo(metronome),
+                    rtimer.Call(t.(int)).ForEachDo(metronome),
                 })
             },
         }
