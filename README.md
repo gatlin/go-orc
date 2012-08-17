@@ -98,7 +98,8 @@ of their values in tandem. `F | G` publishes the results of both `F` and `G`,
 which may be sites or other expressions built on them.
 
 *Sequence* is also simple. `F >x> G(x)` means "do F, then with the results do
-G."
+G." If `F` is actually an expression (say, `H | J`), then *each* published
+value of `F` is run through `G`.
 
 *Prune* is conceptually a little harder. `F <x< G` means "Do F and G in
 parallel, but hold the parts that rely on a value from G until you get one."
@@ -126,7 +127,8 @@ happen concurrently thanks to `Call` using the `go` keyword), so it's
 represented as `Merge`: merge a slice of void channels into a single one.
 
 *Sequence* becomes the void channel method `ForEachDo` which accepts a Site to
-be called for each value.
+be called for each value; *sequence* is essentially an implicit event loop, but
+Go has explicit loops.
 
 *Prune* takes a huge semantic hit because at the moment, without
 metaprogramming, I'm not sure how I would know which parts of the
