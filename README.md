@@ -16,60 +16,57 @@ intelligent, simple primitives.
 ---
 
     func main() {
-        // first example: print which site loads first
-        // this site loads a URL and then publishes the URL when it finishes
-        s1 := Site{
-            func(url Void, out Voidchan) {
+
+        // a site is a function which publishes a value asynchronously
+        load_page := orc.Site{
+            func(url orc.Void, publish orc.Voidchan) {
                 resp, _ := http.Get(url.(string))
                 defer resp.Body.Close()
-                out <- url
+                publish <- url
             },
         }
 
-        res1 := Cut([]Voidchan{
-            s1.Call("http://archlinux.fr"),
-            s1.Call("http://easynews.com"),
-            s1.Call("http://google.com"),
+        // the built-in Cut function calls multiple sites concurrently and yields
+        // the first return value
+        loaded_first := orc.Cut([]orc.Voidchan{
+            load_page.Call("http://archlinux.fr"),
+            load_page.Call("http://google.com"),
+            load_page.Call("http://amazon.com"),
         })
-        fmt.Println(res1.(string))
 
-        // metronome example
+        // for now, it's your job to assert types.
+        // Void is interface{} and Voidchan is chan interface{}
+        fmt.Println(loaded_first.(string))
 
-        // returns t after t seconds
-        rtimer := Site{
-            func(t Void, out Voidchan) {
+        // rtimer publishes `t` after `t` seconds
+        rtimer := orc.Site{
+            func(t orc.Void, publish orc.Voidchan) {
                 <-time.After(time.Duration(t.(int)) * time.Second)
-                out <- t
+                publish <- t
             },
         }
 
-        // rtimer test
-        rtimer.Call(5).WithFirstDo(Site{
-            func(arg Void, out Voidchan) {
-                fmt.Println("rtimer test")
-                out <- nil
-            },
-        })
-
-        // site to print a message
-        site_print := Site{
-            func(msg Void, out Voidchan) {
+        // this site wraps fmt.Println
+        site_print := orc.Site{
+            func(msg orc.Void, publish orc.Voidchan) {
                 fmt.Println(msg)
-                out <- nil
+                publish <- nil
             },
         }
 
-        // metronome site
         // sites can be recursive if pre-declared
-        var metronome Site
-        metronome = Site{
-            func(t Void, out Voidchan) {
-                Merge([]Voidchan{
+        // metronome also shows a nifty heart-beat pattern in Orc which could be
+        // useful for fault-tolerance in distributed computations
+        var metronome orc.Site
+        metronome = orc.Site{
+            func(t orc.Void, publish orc.Voidchan) {
+                orc.Merge([]orc.Voidchan{
                     site_print.Call("tick"),
-                    rtimer.Call(t.(int)).ForEachDo(metronome),
+                    rtimer.Call(t).ForEachDo(metronome),
                 })
             },
         }
+
         <-metronome.Call(1)
     }
 
