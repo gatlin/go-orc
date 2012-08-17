@@ -82,42 +82,62 @@ Jayadev Misra and Dr William Cook. I am not affiliated with them.
 3. Explain this Orc thing
 ---
 
-The Orc language, as a domain specific language built from scratch, makes
-certain language constructs implicit: asynchronous queues, iteration, and even
-concurrency itself. The corner stone of their work is the *site*, which is like
-a function but which executes concurrently with other sites and responds
-asynchronously with either a value or an explicit nothing.
+Orc, is a language and concurrency calculus developed at the University of
+Texas, Austin. Based on the JVM, it is designed from the ground up to
+orchestrate concurrent operations and provides a nice functional syntax.
 
-In Go, we have functions, the `go` keyword, and asynchronous queues as
-first-class values. Thus, a *site* is any function which returns a chan
-(specifically, type `chan interface{}` or `Voidchan` for convenience).
+I've implemented some semantics of Orc in Go.
 
-On top of this notion of sites there are three combinators: *parallel*,
-*sequence*, and *prune*. These ideas have been modified to reflect the
-mechanics of the host language while retaining (hopefully) the same semantics.
+In Orc you have *sites* which are like functions except they "publish" values
+non-deterministically and may actually be implemented across the network. On
+top of this concept are four combinators: *parallel*, *sequence*, *prune*, and
+*otherwise*.
 
-*Parallel* takes two site calls and re-publishes their independent results
-together. Since really all this is doing is merging the output streams of two
-chans (Go handles the concurrency part), this library provides `Merge`.
+*Parallel* is pretty simple: given two site invocations, it re-publishes both
+of their values in tandem. `F | G` publishes the results of both `F` and `G`,
+which may be sites or other expressions built on them.
 
-*Sequence* takes a source of published values on the left (such as a site call,
-or an application of *Parallel*) and an expression on the right using the
-publish values. Since this is basically an iteration over a channel, this
-library supplies the method `ForEachDo`, which accepts a lambda to process the
-values.
+*Sequence* is also simple. `F >x> G(x)` means "do F, then with the results do
+G."
 
-Finally, *Prune* takes a source of published values and returns the first one.
-In the spirit of `ForEachDo`, this library supplies `WithFirstDo`. It has the
-same signature.
+*Prune* is conceptually a little harder. `F <x< G` means "Do F and G in
+parallel, but hold the parts that rely on a value from G until you get one."
+The first value published by the expression G is used in F.
 
-Together, `Merge`, `ForEachDo`, and `WithFirstDo` allow us to build highly
-concurrent applications and express common patterns elegantly, all the while
-retaining guarantees about the effects of our programs.
+*Otherwise* returns to simplicity: `F ; G` means "do F, and if you get a *nil*
+value, publish G instead."
 
-Orc additionally intends on supplying common combinations of these functions;
-currently, `Cut` is also provided (a combination of `Merge` and `WithFirstDo`).
+4. How this translates to Go
+---
 
-4. Future
+The actual Orc language makes certain things implicit - sites essentially are
+asynchronous message queues that can return anything at any time, and the
+combinators specified above really just implement schemes to manage
+non-deterministic values coming out of the pipes.
+
+Thus, sites are represented by the Site struct, which contains a function and a
+`Call` method. Site functions don't return, but publish values to the channel
+supplied to them. I chose to implement Sites this way because in the future I'd
+like them to abstract where the Sites were defined and form the basis of
+something akin to distributed objects.
+
+*Parallel* really just merges the output channels of two site calls (which
+happen concurrently thanks to `Call` using the `go` keyword), so it's
+represented as `Merge`: merge a slice of void channels into a single one.
+
+*Sequence* becomes the void channel method `ForEachDo` which accepts a Site to
+be called for each value.
+
+*Prune* takes a huge semantic hit because at the moment, without
+metaprogramming, I'm not sure how I would know which parts of the
+right-hand-side depend on the left - so it's assumed that all of it does. In
+that regard, *prune* becomes the void channel method `WithFirstDo`. It accepts
+a site just like `ForEachDo` and on the first value does something. So it's
+similar in utility and semantics but not identical.
+
+There will be practical and semantic changes; stay tuned.
+
+5. Future
 ---
 
 Right now I play fast and loose with the type system. I would eventually like
