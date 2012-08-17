@@ -15,6 +15,15 @@ intelligent, simple primitives.
 1. Synopsis
 ---
 
+    package main
+
+    import (
+        "fmt"
+        "net/http"
+        "time"
+        "github.com/gatlin/go-orc"
+    )
+
     func main() {
 
         // a site is a function which publishes a value asynchronously
