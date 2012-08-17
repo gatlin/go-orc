@@ -82,8 +82,11 @@ intelligent, simple primitives.
 2. Acknowledgements
 ---
 
-The work is inspired by the [language of the same name][1], and the work of Dr
-Jayadev Misra and Dr William Cook. I am not affiliated with them.
+The work is inspired by the [language of the same name][1] and everyone who has
+worked on it there.
+
+My semantics are not exactly the same but this is a work in progress; I'd love
+it if someone sent me corrections.
 
 3. Explain this Orc thing
 ---
