@@ -3,7 +3,8 @@ Orc
 
 Concurrency orchestration patterns for a concurrent language
 
-(c) 2012 Gatlin Johnson <rokenrol@gmail.com>. Licensed under the WTFPL.
+(c) 2012 Gatlin Johnson <rokenrol@gmail.com>. See LICENSE for licensing
+details. 
 
 0. Introduction
 ---
