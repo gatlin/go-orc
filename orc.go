@@ -56,9 +56,8 @@ func (self Voidchan) Otherwise(s Site, arg Void) Voidchan {
 	val := <-self
 	if val == nil {
 		return s.Call(arg)
-	} else {
-		return self
 	}
+	return self
 }
 
 func Cut(cs []Voidchan) Void {
