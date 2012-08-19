@@ -52,6 +52,15 @@ func (self Voidchan) WithFirstDo(fn Site) {
 	<-fn.Call(v)
 }
 
+func (self Voidchan) Otherwise(s Site, arg Void) Voidchan {
+	val := <-self
+	if val == nil {
+		return s.Call(arg)
+	} else {
+		return self
+	}
+}
+
 func Cut(cs []Voidchan) Void {
 	c := make(Voidchan, 1)
 	Merge(cs).WithFirstDo(Site{
