@@ -3,6 +3,8 @@ Orc
 
 Concurrency orchestration patterns for a concurrent language
 
+**I am working on a new version of this. Same ideas, cleaner semantics, much much nicer syntax.**
+
 (c) 2012 Gatlin Johnson <rokenrol@gmail.com>. See LICENSE for licensing
 details. 
 
