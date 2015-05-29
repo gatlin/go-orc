@@ -5,6 +5,8 @@ Concurrency orchestration patterns for a concurrent language
 
 **I am working on a new version of this. Same ideas, cleaner semantics, much much nicer syntax.**
 
+**ACTUALLY I AM NOT AS I DON'T REALLY USE GO ANYMORE BUT IDK IT MIGHT STILL BE USEFUL**
+
 (c) 2012 Gatlin Johnson <gatlin@niltag.net>. See LICENSE for licensing
 details. 
 
